@@ -13,6 +13,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -37,23 +38,18 @@ public class MainActivity extends Activity {
     }
 
     private void load() {
-        rx.Observable.create((rx.Observable.OnSubscribe<List<MainData>>) subscriber -> {
-            List<MainData> mainDataList = new ArrayList<>();
-            Uri uri = ContactsContract.Contacts.CONTENT_URI;
-            String[] projection = new String[]{
-                    ContactsContract.Contacts._ID,
-                    ContactsContract.Contacts.DISPLAY_NAME,
-                    ContactsContract.Contacts.HAS_PHONE_NUMBER};
-
-            Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-            if (cursor != null && cursor.getCount() > 0) {
-                while (cursor.moveToNext()) {
-                    MainData mainData = new MainData();
-                    mainData.displayName = cursor.getString(1);
-                    mainDataList.add(mainData);
-                }
-            }
+        Observable.create((Observable.OnSubscribe<List<MainData>>) subscriber -> {
+            List<MainData> mainDataList = loadBasic();
             subscriber.onNext(mainDataList);
+
+
+            List<MainData> mainDataListWithName = mainDataList;
+            for (int i = 0; i < mainDataList.size(); i++) {
+                MainData mainData = mainDataList.get(i);
+                mainDataListWithName.set(i, loadName(mainData));
+                subscriber.onNext(mainDataListWithName);
+            }
+
             subscriber.onCompleted();
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -61,5 +57,54 @@ public class MainActivity extends Activity {
                     adapter.setItems(mainDataList);
                     adapter.notifyDataSetChanged();
                 });
+    }
+
+    private List<MainData> loadBasic() {
+        List<MainData> mainDataList = new ArrayList<>();
+        Uri uri = ContactsContract.Contacts.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+        };
+
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                MainData mainData = new MainData();
+                mainData.id = cursor.getLong(0);
+                mainData.displayName = cursor.getString(1);
+                mainDataList.add(mainData);
+            }
+            cursor.close();
+        }
+        return mainDataList;
+    }
+
+    private MainData loadName(MainData mainData) {
+        Uri uri = ContactsContract.Data.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
+                ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME,
+                ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+                ContactsContract.CommonDataKinds.StructuredName.PREFIX,
+                ContactsContract.CommonDataKinds.StructuredName.SUFFIX,
+
+        };
+        String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?";
+
+        Cursor cursor = getContentResolver().query(uri, projection, selection, new String[]{String.valueOf(mainData.id)}, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                mainData.nameDisplayName = cursor.getString(0);
+                mainData.nameFamilyName = cursor.getString(1);
+                mainData.nameMiddleName = cursor.getString(2);
+                mainData.nameGivenName = cursor.getString(3);
+                mainData.namePrefix = cursor.getString(4);
+                mainData.nameSuffix = cursor.getString(5);
+            }
+            cursor.close();
+        }
+        return mainData;
     }
 }

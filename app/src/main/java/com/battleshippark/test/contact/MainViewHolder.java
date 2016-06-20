@@ -10,8 +10,26 @@ import butterknife.ButterKnife;
 /**
  */
 public class MainViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R.id.textView1)
-    TextView textView1;
+    @BindView(R.id.name1)
+    TextView name1;
+
+    @BindView(R.id.name2)
+    TextView name2;
+
+    @BindView(R.id.name3)
+    TextView name3;
+
+    @BindView(R.id.name4)
+    TextView name4;
+
+    @BindView(R.id.name5)
+    TextView name5;
+
+    @BindView(R.id.name6)
+    TextView name6;
+
+    @BindView(R.id.name7)
+    TextView name7;
 
     public MainViewHolder(View view) {
         super(view);
@@ -19,6 +37,12 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(int position, MainData mainData) {
-        textView1.setText(mainData.displayName);
+        name1.setText(mainData.displayName);
+        name2.setText(mainData.nameDisplayName);
+        name3.setText(mainData.nameFamilyName);
+        name4.setText(mainData.nameMiddleName);
+        name5.setText(mainData.nameGivenName);
+        name6.setText(mainData.namePrefix);
+        name7.setText(mainData.nameSuffix);
     }
 }
