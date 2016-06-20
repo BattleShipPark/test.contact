@@ -56,6 +56,13 @@ public class MainActivity extends Activity {
                 subscriber.onNext(mainDataListWithPhone);
             }
 
+            List<MainData> mainDataListWithEmail = mainDataListWithPhone;
+            for (int i = 0; i < mainDataListWithPhone.size(); i++) {
+                MainData mainData = mainDataListWithPhone.get(i);
+                mainDataListWithEmail.set(i, loadEmail(mainData));
+                subscriber.onNext(mainDataListWithEmail);
+            }
+
             subscriber.onCompleted();
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -136,6 +143,33 @@ public class MainActivity extends Activity {
                 phone.phoneType = cursor.getString(2);
                 phone.phoneLabel = cursor.getString(3);
                 mainData.phones.add(phone);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return mainData;
+    }
+
+    private MainData loadEmail(MainData mainData) {
+        Uri uri = ContactsContract.CommonDataKinds.Email.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.Email.LABEL,
+                ContactsContract.CommonDataKinds.Email.TYPE,
+                ContactsContract.CommonDataKinds.Email.ADDRESS,
+                ContactsContract.CommonDataKinds.Email.DISPLAY_NAME,
+
+        };
+        String selection = String.format("%s=?", ContactsContract.CommonDataKinds.Email.CONTACT_ID);
+        String[] where = new String[]{String.valueOf(mainData.id)};
+        Cursor cursor = getContentResolver().query(uri, projection, selection, where, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                MainData.Email email = new MainData.Email();
+                email.emailLabel = cursor.getString(0);
+                email.emailType = cursor.getString(1);
+                email.emailAddres = cursor.getString(2);
+                email.emailDisplayName = cursor.getString(3);
+                mainData.emails.add(email);
             } while (cursor.moveToNext());
             cursor.close();
         }

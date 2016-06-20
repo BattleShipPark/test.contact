@@ -100,26 +100,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/email1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text" />
 
         <TextView
-            android:id="@+id/textView11"
+            android:id="@+id/email2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:text="New Text" />
 
         <TextView
-            android:id="@+id/textView12"
+            android:id="@+id/email3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:text="New Text" />
+
+        <TextView
+            android:id="@+id/email4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="New Text" />
     </LinearLayout>
 </LinearLayout>

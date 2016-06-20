@@ -43,6 +43,18 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.phone4)
     TextView phone4;
 
+    @BindView(R.id.email1)
+    TextView email1;
+
+    @BindView(R.id.email2)
+    TextView email2;
+
+    @BindView(R.id.email3)
+    TextView email3;
+
+    @BindView(R.id.email4)
+    TextView email4;
+
     public MainViewHolder(View view) {
         super(view);
         ButterKnife.bind(this, view);
@@ -63,9 +75,26 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
             phone3.setText(makePhoneText(mainData.phones.get(2)));
             phone4.setText(makePhoneText(mainData.phones.get(3)));
         }
+
+        if (mainData.emails.size() > 0) {
+            email1.setText(makeEmailText(mainData.emails.get(0)));
+        }
+        if (mainData.emails.size() > 1) {
+            email2.setText(makeEmailText(mainData.emails.get(1)));
+        }
+        if (mainData.emails.size() > 2) {
+            email3.setText(makeEmailText(mainData.emails.get(2)));
+        }
+        if (mainData.emails.size() > 3) {
+            email4.setText(makeEmailText(mainData.emails.get(3)));
+        }
     }
 
     private String makePhoneText(MainData.Phone phone) {
         return String.format("%s;%s;%s;%s", phone.phoneNormNumber, phone.phoneNumber, phone.phoneType, phone.phoneLabel);
+    }
+
+    private String makeEmailText(MainData.Email email) {
+        return String.format("%s;%s;%s;%s", email.emailLabel, email.emailType, email.emailAddres, email.emailDisplayName);
     }
 }

@@ -16,11 +16,19 @@ public class MainData {
     public String nameSuffix;
 
     public List<Phone> phones = new ArrayList<>();
+    public List<Email> emails = new ArrayList<>();
 
     public static class Phone {
         public String phoneNormNumber;
         public String phoneNumber;
         public String phoneType;
         public String phoneLabel;
+    }
+
+    public static class Email {
+        public String emailLabel;
+        public String emailType;
+        public String emailAddres;
+        public String emailDisplayName;
     }
 }
