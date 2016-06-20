@@ -86,14 +86,15 @@ public class MainActivity extends Activity {
                 ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
                 ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME,
-                ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
-                ContactsContract.CommonDataKinds.StructuredName.PREFIX,
-                ContactsContract.CommonDataKinds.StructuredName.SUFFIX,
+                ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, //이름
+                ContactsContract.CommonDataKinds.StructuredName.PREFIX, //호칭
+                ContactsContract.CommonDataKinds.StructuredName.SUFFIX, //경칭
 
         };
-        String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?";
-
-        Cursor cursor = getContentResolver().query(uri, projection, selection, new String[]{String.valueOf(mainData.id)}, null);
+        String selection = String.format("%s=? AND %s=?", ContactsContract.CommonDataKinds.StructuredName.CONTACT_ID,
+                ContactsContract.Data.MIMETYPE);
+        String[] where = new String[]{String.valueOf(mainData.id), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE};
+        Cursor cursor = getContentResolver().query(uri, projection, selection, where, null);
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 mainData.nameDisplayName = cursor.getString(0);
