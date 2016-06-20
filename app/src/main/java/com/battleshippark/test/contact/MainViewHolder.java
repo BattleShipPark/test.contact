@@ -31,6 +31,18 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.name7)
     TextView name7;
 
+    @BindView(R.id.phone1)
+    TextView phone1;
+
+    @BindView(R.id.phone2)
+    TextView phone2;
+
+    @BindView(R.id.phone3)
+    TextView phone3;
+
+    @BindView(R.id.phone4)
+    TextView phone4;
+
     public MainViewHolder(View view) {
         super(view);
         ButterKnife.bind(this, view);
@@ -44,5 +56,16 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
         name5.setText(mainData.nameGivenName);
         name6.setText(mainData.namePrefix);
         name7.setText(mainData.nameSuffix);
+
+        if (mainData.phones.size() > 0) {
+            phone1.setText(makePhoneText(mainData.phones.get(0)));
+            phone2.setText(makePhoneText(mainData.phones.get(1)));
+            phone3.setText(makePhoneText(mainData.phones.get(2)));
+            phone4.setText(makePhoneText(mainData.phones.get(3)));
+        }
+    }
+
+    private String makePhoneText(MainData.Phone phone) {
+        return String.format("%s;%s;%s;%s", phone.phoneNormNumber, phone.phoneNumber, phone.phoneType, phone.phoneLabel);
     }
 }
