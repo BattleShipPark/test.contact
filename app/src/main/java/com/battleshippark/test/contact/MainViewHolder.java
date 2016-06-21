@@ -71,8 +71,14 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
 
         if (mainData.phones.size() > 0) {
             phone1.setText(makePhoneText(mainData.phones.get(0)));
+        }
+        if (mainData.phones.size() > 1) {
             phone2.setText(makePhoneText(mainData.phones.get(1)));
+        }
+        if (mainData.phones.size() > 2) {
             phone3.setText(makePhoneText(mainData.phones.get(2)));
+        }
+        if (mainData.phones.size() > 3) {
             phone4.setText(makePhoneText(mainData.phones.get(3)));
         }
 

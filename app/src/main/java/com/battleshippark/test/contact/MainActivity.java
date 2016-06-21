@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,29 +40,35 @@ public class MainActivity extends Activity {
 
     private void load() {
         Observable.create((Observable.OnSubscribe<List<MainData>>) subscriber -> {
+            Log.i("TIME", String.valueOf(System.currentTimeMillis()/100));
+
             List<MainData> mainDataList = loadBasic();
             subscriber.onNext(mainDataList);
+            Log.i("TIME", String.valueOf(System.currentTimeMillis()/100) + ", " +mainDataList.size());
 
             List<MainData> mainDataListWithName = mainDataList;
             for (int i = 0; i < mainDataList.size(); i++) {
                 MainData mainData = mainDataList.get(i);
                 mainDataListWithName.set(i, loadName(mainData));
-                subscriber.onNext(mainDataListWithName);
             }
+            subscriber.onNext(mainDataListWithName);
+            Log.i("TIME", String.valueOf(System.currentTimeMillis()/100));
 
             List<MainData> mainDataListWithPhone = mainDataListWithName;
             for (int i = 0; i < mainDataListWithName.size(); i++) {
                 MainData mainData = mainDataListWithName.get(i);
                 mainDataListWithPhone.set(i, loadPhone(mainData));
-                subscriber.onNext(mainDataListWithPhone);
             }
+            subscriber.onNext(mainDataListWithPhone);
+            Log.i("TIME", String.valueOf(System.currentTimeMillis()/100));
 
             List<MainData> mainDataListWithEmail = mainDataListWithPhone;
             for (int i = 0; i < mainDataListWithPhone.size(); i++) {
                 MainData mainData = mainDataListWithPhone.get(i);
                 mainDataListWithEmail.set(i, loadEmail(mainData));
-                subscriber.onNext(mainDataListWithEmail);
             }
+            subscriber.onNext(mainDataListWithEmail);
+            Log.i("TIME", String.valueOf(System.currentTimeMillis()/100));
 
             subscriber.onCompleted();
         }).subscribeOn(Schedulers.io())
@@ -81,12 +88,14 @@ public class MainActivity extends Activity {
         };
 
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            while (cursor.moveToNext()) {
-                MainData mainData = new MainData();
-                mainData.id = cursor.getLong(0);
-                mainData.displayName = cursor.getString(1);
-                mainDataList.add(mainData);
+        if (cursor != null) {
+            if(cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    MainData mainData = new MainData();
+                    mainData.id = cursor.getLong(0);
+                    mainData.displayName = cursor.getString(1);
+                    mainDataList.add(mainData);
+                }
             }
             cursor.close();
         }
@@ -108,16 +117,17 @@ public class MainActivity extends Activity {
                 ContactsContract.Data.MIMETYPE);
         String[] where = new String[]{String.valueOf(mainData.id), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE};
         Cursor cursor = getContentResolver().query(uri, projection, selection, where, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
+        if (cursor != null) {
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
 
-            mainData.nameDisplayName = cursor.getString(0);
-            mainData.nameFamilyName = cursor.getString(1);
-            mainData.nameMiddleName = cursor.getString(2);
-            mainData.nameGivenName = cursor.getString(3);
-            mainData.namePrefix = cursor.getString(4);
-            mainData.nameSuffix = cursor.getString(5);
-
+                mainData.nameDisplayName = cursor.getString(0);
+                mainData.nameFamilyName = cursor.getString(1);
+                mainData.nameMiddleName = cursor.getString(2);
+                mainData.nameGivenName = cursor.getString(3);
+                mainData.namePrefix = cursor.getString(4);
+                mainData.nameSuffix = cursor.getString(5);
+            }
             cursor.close();
         }
         return mainData;
@@ -134,16 +144,18 @@ public class MainActivity extends Activity {
         String selection = String.format("%s=?", ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
         String[] where = new String[]{String.valueOf(mainData.id)};
         Cursor cursor = getContentResolver().query(uri, projection, selection, where, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-                MainData.Phone phone = new MainData.Phone();
-                phone.phoneNormNumber = cursor.getString(0);
-                phone.phoneNumber = cursor.getString(1);
-                phone.phoneType = cursor.getString(2);
-                phone.phoneLabel = cursor.getString(3);
-                mainData.phones.add(phone);
-            } while (cursor.moveToNext());
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    MainData.Phone phone = new MainData.Phone();
+                    phone.phoneNormNumber = cursor.getString(0);
+                    phone.phoneNumber = cursor.getString(1);
+                    phone.phoneType = cursor.getString(2);
+                    phone.phoneLabel = cursor.getString(3);
+                    mainData.phones.add(phone);
+                } while (cursor.moveToNext());
+            }
             cursor.close();
         }
         return mainData;
@@ -161,16 +173,18 @@ public class MainActivity extends Activity {
         String selection = String.format("%s=?", ContactsContract.CommonDataKinds.Email.CONTACT_ID);
         String[] where = new String[]{String.valueOf(mainData.id)};
         Cursor cursor = getContentResolver().query(uri, projection, selection, where, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-                MainData.Email email = new MainData.Email();
-                email.emailLabel = cursor.getString(0);
-                email.emailType = cursor.getString(1);
-                email.emailAddres = cursor.getString(2);
-                email.emailDisplayName = cursor.getString(3);
-                mainData.emails.add(email);
-            } while (cursor.moveToNext());
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    MainData.Email email = new MainData.Email();
+                    email.emailLabel = cursor.getString(0);
+                    email.emailType = cursor.getString(1);
+                    email.emailAddres = cursor.getString(2);
+                    email.emailDisplayName = cursor.getString(3);
+                    mainData.emails.add(email);
+                } while (cursor.moveToNext());
+            }
             cursor.close();
         }
         return mainData;
